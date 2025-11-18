@@ -222,8 +222,21 @@ public class AuthResource {
                 .onItem().transformToUni(otp -> otp.markAsUsed()
                         .onItem().transformToUni(usedOtp -> {
                             usedOtp.user.userStatus = UserStatus.CONFIRMED;
-                            return usedOtp.user.persistAndFlush()
-                                    .onItem().transform(user -> Response.ok().build());
+                            return usedOtp.user.<User>persistAndFlush()
+                                    .onItem().transform(user -> {
+                                        var jwtBuilder = Jwt
+                                                .issuer("https://auth.dinevo.it")
+                                                .upn(user.displayName)
+                                                .claim("userId", user.id)
+                                                .claim("accountVerified", true)
+                                                .groups(user.userType.name());
+
+                                        String token = jwtBuilder
+                                                .expiresIn(Duration.ofMinutes(30))
+                                                .sign();
+
+                                        return Response.ok().header("Authorization", "Bearer " + token).build();
+                            });
                         }))
                 .onFailure(RuntimeException.class).recoverWithItem(() ->
                     Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "DIN_OTP_INVALID_OR_EXPIRED").build()
