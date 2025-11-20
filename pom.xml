@@ -46,13 +46,14 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-security</artifactId>
         </dependency>
+        <!-- Needed for io.quarkus.elytron.security.common.BcryptUtil at runtime -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-jwt</artifactId>
+            <artifactId>quarkus-elytron-security-common</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-elytron-security-jdbc</artifactId>
+            <artifactId>quarkus-smallrye-jwt</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
